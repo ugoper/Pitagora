@@ -12,6 +12,7 @@ HINSTANCE hInst;                                // istanza corrente
 WCHAR szTitle[MAX_LOADSTRING];                  // Testo della barra del titolo
 WCHAR szWindowClass[MAX_LOADSTRING];            // nome della classe della finestra principale
 
+
 // Dichiarazioni con prototipo di funzioni incluse in questo modulo di codice:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -100,8 +101,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
-
-   if (!hWnd)
+      if (!hWnd)
    {
       return FALSE;
    }
@@ -121,15 +121,18 @@ BOOL scriviTabellina(HWND finestra, HDC hdc)
     SIZE_T a;
     SIZE dimTesto;
     int dx, dy;
+    HFONT fontOriginal, fontNew;
 
     // initialization
     molt[9] = 0; // declaration to avoid warnings on mbstwcs_s
     GetClientRect(finestra, &rectFinestra);
-
     // definizione del passo in pbase alla dimensione della finestra
     GetTextExtentPoint32(hdc, testoUgo, 10, &dimTesto);
     dx = rectFinestra.right / 12;
     dy = rectFinestra.bottom / 12;
+    // set the font
+    fontNew = CreateFont(dy, dx/3, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Impact"));
+    fontOriginal = (HFONT)SelectObject(hdc, fontNew);
     // print the Pitagoric table
     rectFinestra.top = 0;
     rectFinestra.bottom = dy;
@@ -167,6 +170,9 @@ BOOL scriviTabellina(HWND finestra, HDC hdc)
         
 
     }
+    // restore the font
+    SelectObject(hdc, fontOriginal);
+    DeleteObject(fontNew);
     return 0;
 }
 
